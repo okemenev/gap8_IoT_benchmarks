@@ -149,7 +149,7 @@ int test_num[TOT_TEST]={5,4,5,4};
 #include "Gap8.h"
 
 static int CoreCountDynamic = 1;
-static int ActiveCore = 4;
+static int ActiveCore = 8;
 
 static inline unsigned int __attribute__((always_inline)) ChunkSize(unsigned int X)
 
@@ -1001,7 +1001,8 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
 
 {
 	unsigned int Ti;
-	unsigned int perf_cnt;
+	unsigned int perf_cnt = 0; //change this for different counters (not added to RunTest func for Testing)
+	int perf_cnt
 	int perf_cnt_mode;
 	char* perf_cnt_name;	
 	ArgConvT Arg;
@@ -1011,8 +1012,33 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
 	rt_perf_t *perf;
 	perf = rt_alloc(RT_ALLOC_L2_CL_DATA, sizeof(rt_perf_t));
 	rt_perf_init(perf);
-	perf_cnt_mode = RT_PERF_LD;
-	perf_cnt_name = "RT_PERF_LD";
+	switch(perf_cnt){
+		case 0:
+			perf_cnt_mode = RT_PERF_CYCLES;
+			perf_cnt_name = "RT_PERF_CYCLES";
+			break;
+		case 1:
+			perf_cnt_mode = RT_PERF_ACTIVE_CYCLES;
+			perf_cnt_name = "RT_PERF_ACTIVE_CYCLES";
+			break;
+		case 2:
+			perf_cnt_mode = RT_PERF_INSTR;
+			perf_cnt_name = "RT_PERF_INSTR";
+			break;
+		case 3:
+			perf_cnt_mode = RT_PERF_IMISS;
+			perf_cnt_name = "RT_PERF_IMISS";
+			break;
+		case 4:
+			perf_cnt_mode = RT_PERF_LD;
+			perf_cnt_name = "RT_PERF_LD";
+			break;
+		case 5:
+			perf_cnt_mode = RT_PERF_ST;
+			perf_cnt_name = "RT_PERF_ST";
+			break;
+			
+	
 	rt_perf_conf(perf, (1<<perf_cnt_mode));
 	switch (Which) {
 		case 0:
