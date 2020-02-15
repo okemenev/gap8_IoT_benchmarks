@@ -1001,8 +1001,7 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
 
 {
 	unsigned int Ti;
-	unsigned int perf_cnt = 0; //change this for different counters (not added to RunTest func for Testing)
-	int perf_cnt
+	int perf_cnt = 0; //change this for different counters (not added to RunTest func for Testing)	
 	int perf_cnt_mode;
 	char* perf_cnt_name;	
 	ArgConvT Arg;
@@ -1037,7 +1036,7 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
 			perf_cnt_mode = RT_PERF_ST;
 			perf_cnt_name = "RT_PERF_ST";
 			break;
-			
+	}			
 	
 	rt_perf_conf(perf, (1<<perf_cnt_mode));
 	switch (Which) {
