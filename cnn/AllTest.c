@@ -8,7 +8,8 @@
 #define BYTE 
 
 
-#define ITERATIONS 100
+#define ITERATIONS 100000
+#define ITERATIONS_LT 10000
 #define ENABLE_CYCLE_TRACE 1 
 
 #define ALIM_1_VOLT 1
@@ -1425,7 +1426,8 @@ int main()
     printf("Fabric Controller Freq: %d MhZ\n", FREQ_FC/1000000);
     printf("Cluster  Freq         : %d MhZ\n\n\n", FREQ_CL/1000000);
     
-    printf("Number of iterations for each benchmark: %d\n\n\n", ITERATIONS);
+    printf("Number of iterations for most benchmarks: %d\n\n\n", ITERATIONS);
+    printf("Number of iterations for long benchmarks: %d\n\n\n", ITERATIONS_LT);
     
 
     if (rt_event_alloc(NULL, 8)) return -1;
@@ -1439,14 +1441,13 @@ int main()
     for(int j=0; j < TOT_TEST; j++ ){
         printf("\n                      ---------------   %15s   ---------------\n",tests_titles[j]);
         for(int i=0; i < test_num[j]; i++ ){
-			if(i == 3){
-				ITERATIONS = ITERATIONS/5;
-			}
-			else if(i == 4){
-				ITERATIONS = ITERATIONS*5
-			}
-            Arg.test_num        = cur_test++;  
-            Arg.Iter            = ITERATIONS;
+		if(i == 2 || i == 7 || i == 11 || i ==16){
+			Arg.Iter = ITERATIONS_LT;
+		}
+		else {
+			Arg.Iter = ITERATIONS;
+		}
+            Arg.test_num        = cur_test++; 
             Arg.Trace           = ENABLE_CYCLE_TRACE;
             #ifdef BYTE
             strcpy(Arg.Mode,"Byte");
@@ -1460,9 +1461,12 @@ int main()
             
             tot_time = end_time-start_time;
             op_num   = Arg.Iter_operations;
-            
-            printf ("%30s Input: %dx%d (x%d iterations) Time: %10ld uSec. Cycles: %10ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS, tot_time, op_num);
-
+		if(i == 2 || i == 7 || i == 11 || i ==16){
+        	    printf ("%30s Input: %dx%d (x%d iterations) Time: %10ld uSec. Cycles: %10ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS_LT, tot_time, op_num);
+	    }
+	    else{
+            	printf ("%30s Input: %dx%d (x%d iterations) Time: %10ld uSec. Cycles: %10ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS, tot_time, op_num);
+	    }
         }
     }
 
