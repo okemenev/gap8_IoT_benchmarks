@@ -37,6 +37,7 @@ char tests_names[][50]={
 {"2x2/2 Avg Pool Vect"},
 {"5x5 Convolutions Vect"},
 {"LinearVect"},
+{"Xnor Conv 5x5 Vect"},
 
 {"2x2/2 Parallel Max Pool"},
 {"2x2/2 Parallel Avg Pool"},
@@ -47,7 +48,8 @@ char tests_names[][50]={
 {"2x2/2 Parallel Max Pool Vect"},
 {"2x2/2 Parallel Avg Pool Vect"},
 {"Parallel Convolution Vect"},
-{"Parallel Linear Vect"}
+{"Parallel Linear Vect"},
+{"Parallel Xnor Conv 5x5 Vect"}
 };
 
 int test_input_w[]={Wi,Wi,Wi,Wil,Wxor};
@@ -1305,6 +1307,7 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
 			for (int i=0; i<Iter; i++) rt_team_fork(gap8_ncore(), (void *) ParAvgPoolingVect, (void *) &Arg);
 			Ti = gap8_readhwtimer() - Ti;
 			WriteGpio(GPIO, 0);
+			perf_cnt = rt_perf_read(perf_cnt_mode);
 			rt_perf_stop(perf);
             *num_ops = Ti;
 			if (Trace) printf("[%2d][%s] %7d %35s: %8d cycles, %1d Cores %10d %s\n", Which, Mode, (Wi/2)*(Hi/2)*Iter, "2x2/2 Parallel Avg Pool Vect", Ti, gap8_ncore(), perf_cnt, perf_cnt_name);
@@ -1344,6 +1347,27 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
             *num_ops = Ti;
 			if (Trace) printf("[%2d][%s] %7d %35s: %8d cycles, %1d Cores %10d %s\n", Which, Mode, Wil*Hil*Iter, "Parallel Linear Vect", Ti, gap8_ncore(), perf_cnt, perf_cnt_name);
             break;
+		case 18:
+			{
+				rt_perf_reset(perf);
+				gap8_resethwtimer();
+				rt_perf_start(perf);
+				unsigned int In = (unsigned int) Mem;
+				signed char *Out =  (signed char *)Mem +((Wxor*Hxor + 7)/8);
+				unsigned int Filter = (unsigned int) Mem + ((Wxor*Hxor + 7)/8)*8 + (Wxor-4)*(Hxor-4)*8;
+				Arg1.InBit = In; Arg1.Out = Out; Arg1.FilterBit = Filter; Arg1.W = Wxor; Arg1.H = Hxor;
+				//gap8_resethwtimer();
+				WriteGpio(GPIO, 1);
+				Ti = gap8_readhwtimer();
+				for (int i=0; i<Iter; i++) rt_team_fork(gap8_ncore(), (void *) ParXnorConv5x5, (void *) &Arg1);
+				Ti = gap8_readhwtimer() - Ti;
+				WriteGpio(GPIO, 0);
+				perf_cnt = rt_perf_read(perf_cnt_mode);
+				rt_perf_stop(perf);
+                *num_ops = Ti;
+			}
+			if (Trace) printf("[%2d][%s] %7d %35s: %8d cycles, %1d Cores %10d %s\n", Which, Mode, (Wxor-4)*(Hxor-4)*Iter, "Parallel Xnor Conv 5x5", Ti, gap8_ncore(), perf_cnt, perf_cnt_name);
+			break;
 #endif
 	}
 }
@@ -1415,7 +1439,12 @@ int main()
     for(int j=0; j < TOT_TEST; j++ ){
         printf("\n                      ---------------   %15s   ---------------\n",tests_titles[j]);
         for(int i=0; i < test_num[j]; i++ ){
-
+			if(i == 3){
+				ITERATIONS = ITERATIONS/5;
+			}
+			else if(i == 4){
+				ITERATIONS = ITERATIONS*5
+			}
             Arg.test_num        = cur_test++;  
             Arg.Iter            = ITERATIONS;
             Arg.Trace           = ENABLE_CYCLE_TRACE;
