@@ -1070,6 +1070,8 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
 			for (int i=0; i<Iter; i++) AvgPooling(IN, Wi, Hi, OUT);
 			Ti = gap8_readhwtimer() - Ti;
 			WriteGpio(GPIO, 0);
+			perf_cnt = rt_perf_read(perf_cnt_mode);
+			rt_perf_stop(perf);
             *num_ops = Ti;
 			if (Trace) printf("[%2d][%s] %7d %35s: %8d cycles %10d %s\n", Which, Mode, (Wi/2)*(Hi/2)*Iter, "2x2/2 Avg Pool", Ti, perf_cnt, perf_cnt_name);
 			break;
@@ -1205,7 +1207,7 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
 			perf_cnt = rt_perf_read(perf_cnt_mode);
 			rt_perf_stop(perf);
             *num_ops = Ti;
-			if (Trace) printf("[%2d][%s] %7d %35s: %8d cycles, %1d Cores %10d %s\n", Which, Mode, (Wi/2)*(Hi/2)*Iter, "2x2/2 Parallel Max Pool", Ti, gap8_ncore(), perf_cnt, perf_cnt_name);
+			if (Trace) printf("[%2d][%s] %7d %35s: %8d cycles, %1d Cores %10d %s\n", Which, Mode, (Wi/2)*(Hi/2)*Iter, "2x2/2 Parallel Max Pool", Ti, ActiveCore, perf_cnt, perf_cnt_name);
 			break;
 		case 10:
 			rt_perf_reset(perf);
@@ -1216,13 +1218,13 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
 			//gap8_resethwtimer();
 			WriteGpio(GPIO, 1);
 			Ti = gap8_readhwtimer();
-			for (int i=0; i<Iter; i++) rt_team_fork(gap8_ncore(), (void *) ParAvgPooling, (void *) &Arg);
+			for (int i=0; i<Iter; i++) rt_team_fork(ActiveCore, (void *) ParAvgPooling, (void *) &Arg);
 			Ti = gap8_readhwtimer() - Ti;
 			WriteGpio(GPIO, 0);
 			perf_cnt = rt_perf_read(perf_cnt_mode);
 			rt_perf_stop(perf);
             *num_ops = Ti;
-			if (Trace) printf("[%2d][%s] %7d %35s: %8d cycles, %1d Cores %10d %s\n", Which, Mode, (Wi/2)*(Hi/2)*Iter, "2x2/2 Parallel Avg Pool", Ti, gap8_ncore(), perf_cnt, perf_cnt_name);
+			if (Trace) printf("[%2d][%s] %7d %35s: %8d cycles, %1d Cores %10d %s\n", Which, Mode, (Wi/2)*(Hi/2)*Iter, "2x2/2 Parallel Avg Pool", Ti, ActiveCore, perf_cnt, perf_cnt_name);
 			break;
 		case 11:
 			rt_perf_reset(perf);
@@ -1233,13 +1235,13 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
 			//gap8_resethwtimer();
 			WriteGpio(GPIO, 1);
 			Ti = gap8_readhwtimer();
-			for (int i=0; i<Iter; i++) rt_team_fork(gap8_ncore(), (void *) ParAdditive5x5Convolution, (void *) &Arg);
+			for (int i=0; i<Iter; i++) rt_team_fork(ActiveCore, (void *) ParAdditive5x5Convolution, (void *) &Arg);
 			Ti = gap8_readhwtimer() - Ti;
 			WriteGpio(GPIO, 0);
 			perf_cnt = rt_perf_read(perf_cnt_mode);
 			rt_perf_stop(perf);
             *num_ops = Ti;
-            if (Trace) printf("[%2d][%s] %7d %35s: %8d cycles, %1d Cores %10d %s\n", Which, Mode, (Wic-4)*(Hic-4)*Iter, "Parallel 5x5 Convolution", Ti, gap8_ncore(), perf_cnt, perf_cnt_name);
+            if (Trace) printf("[%2d][%s] %7d %35s: %8d cycles, %1d Cores %10d %s\n", Which, Mode, (Wic-4)*(Hic-4)*Iter, "Parallel 5x5 Convolution", Ti, ActiveCore, perf_cnt, perf_cnt_name);
 			break;
 		case 12:
 			rt_perf_reset(perf);
@@ -1250,13 +1252,13 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
 			//gap8_resethwtimer();
 			WriteGpio(GPIO, 1);
 			Ti = gap8_readhwtimer();
-			for (int i=0; i<Iter; i++) rt_team_fork(gap8_ncore(), (void *) ParLinear, (void *) &Arg);
+			for (int i=0; i<Iter; i++) rt_team_fork(ActiveCore, (void *) ParLinear, (void *) &Arg);
 			Ti = gap8_readhwtimer() - Ti;
 			WriteGpio(GPIO, 0);
 			perf_cnt = rt_perf_read(perf_cnt_mode);
 			rt_perf_stop(perf);
             *num_ops = Ti;
-			if (Trace) printf("[%2d][%s] %7d %35s: %8d cycles, %1d Cores %10d %s\n", Which, Mode, Wil*Hil*Iter, "Parallel Linear", Ti, gap8_ncore(), perf_cnt, perf_cnt_name);
+			if (Trace) printf("[%2d][%s] %7d %35s: %8d cycles, %1d Cores %10d %s\n", Which, Mode, Wil*Hil*Iter, "Parallel Linear", Ti, ActiveCore, perf_cnt, perf_cnt_name);
 			break;
 		case 13:
 			{
@@ -1270,14 +1272,14 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
 				//gap8_resethwtimer();
 				WriteGpio(GPIO, 1);
 				Ti = gap8_readhwtimer();
-				for (int i=0; i<Iter; i++) rt_team_fork(gap8_ncore(), (void *) ParXnorConv5x5, (void *) &Arg1);
+				for (int i=0; i<Iter; i++) rt_team_fork(ActiveCore, (void *) ParXnorConv5x5, (void *) &Arg1);
 				Ti = gap8_readhwtimer() - Ti;
 				WriteGpio(GPIO, 0);
 				perf_cnt = rt_perf_read(perf_cnt_mode);
 				rt_perf_stop(perf);
                 *num_ops = Ti;
 			}
-			if (Trace) printf("[%2d][%s] %7d %35s: %8d cycles, %1d Cores %10d %s\n", Which, Mode, (Wxor-4)*(Hxor-4)*Iter, "Parallel Xnor Conv 5x5", Ti, gap8_ncore(), perf_cnt, perf_cnt_name);
+			if (Trace) printf("[%2d][%s] %7d %35s: %8d cycles, %1d Cores %10d %s\n", Which, Mode, (Wxor-4)*(Hxor-4)*Iter, "Parallel Xnor Conv 5x5", Ti, ActiveCore, perf_cnt, perf_cnt_name);
 			break;
 		case 14:
 			rt_perf_reset(perf);
@@ -1288,13 +1290,13 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
 			//gap8_resethwtimer();
 			WriteGpio(GPIO, 1);
 			Ti = gap8_readhwtimer();
-			for (int i=0; i<Iter; i++) rt_team_fork(gap8_ncore(), (void *) ParMaxPoolingVect, (void *) &Arg);
+			for (int i=0; i<Iter; i++) rt_team_fork(ActiveCore, (void *) ParMaxPoolingVect, (void *) &Arg);
 			Ti = gap8_readhwtimer() - Ti;
 			WriteGpio(GPIO, 0);
 			perf_cnt = rt_perf_read(perf_cnt_mode);
 			rt_perf_stop(perf);
             *num_ops = Ti;
-			if (Trace) printf("[%2d][%s] %7d %35s: %8d cycles, %1d Cores %10d %s\n", Which, Mode, (Wi/2)*(Hi/2)*Iter, "2x2/2 Parallel Max Pool Vect", Ti, gap8_ncore(), perf_cnt, perf_cnt_name);
+			if (Trace) printf("[%2d][%s] %7d %35s: %8d cycles, %1d Cores %10d %s\n", Which, Mode, (Wi/2)*(Hi/2)*Iter, "2x2/2 Parallel Max Pool Vect", Ti, ActiveCore, perf_cnt, perf_cnt_name);
 			break;
 		case 15:
 			rt_perf_reset(perf);
@@ -1305,13 +1307,13 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
 			//gap8_resethwtimer();
 			WriteGpio(GPIO, 1);
 			Ti = gap8_readhwtimer();
-			for (int i=0; i<Iter; i++) rt_team_fork(gap8_ncore(), (void *) ParAvgPoolingVect, (void *) &Arg);
+			for (int i=0; i<Iter; i++) rt_team_fork(ActiveCore, (void *) ParAvgPoolingVect, (void *) &Arg);
 			Ti = gap8_readhwtimer() - Ti;
 			WriteGpio(GPIO, 0);
 			perf_cnt = rt_perf_read(perf_cnt_mode);
 			rt_perf_stop(perf);
             *num_ops = Ti;
-			if (Trace) printf("[%2d][%s] %7d %35s: %8d cycles, %1d Cores %10d %s\n", Which, Mode, (Wi/2)*(Hi/2)*Iter, "2x2/2 Parallel Avg Pool Vect", Ti, gap8_ncore(), perf_cnt, perf_cnt_name);
+			if (Trace) printf("[%2d][%s] %7d %35s: %8d cycles, %1d Cores %10d %s\n", Which, Mode, (Wi/2)*(Hi/2)*Iter, "2x2/2 Parallel Avg Pool Vect", Ti, ActiveCore, perf_cnt, perf_cnt_name);
 			break;
 		case 16:
 			rt_perf_reset(perf);
@@ -1322,13 +1324,13 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
 			//gap8_resethwtimer();
 			WriteGpio(GPIO, 1);
 			Ti = gap8_readhwtimer();
-			for (int i=0; i<Iter; i++) rt_team_fork(gap8_ncore(), (void *) ParAdditive5x5ConvolutionVect, (void *) &Arg);
+			for (int i=0; i<Iter; i++) rt_team_fork(ActiveCore, (void *) ParAdditive5x5ConvolutionVect, (void *) &Arg);
 			Ti = gap8_readhwtimer() - Ti;
 			WriteGpio(GPIO, 0);
 			perf_cnt = rt_perf_read(perf_cnt_mode);
 			rt_perf_stop(perf);
             *num_ops = Ti;
-			if (Trace) printf("[%2d][%s] %7d %35s: %8d cycles, %1d Cores %10d %s\n", Which, Mode, (Wic-4)*(Hic-4)*Iter, "Parallel Convolution Vect", Ti, gap8_ncore(), perf_cnt, perf_cnt_name);
+			if (Trace) printf("[%2d][%s] %7d %35s: %8d cycles, %1d Cores %10d %s\n", Which, Mode, (Wic-4)*(Hic-4)*Iter, "Parallel Convolution Vect", Ti, ActiveCore, perf_cnt, perf_cnt_name);
 			break;
 		case 17:
 			rt_perf_reset(perf);
@@ -1340,13 +1342,13 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
 			//gap8_resethwtimer();
 			WriteGpio(GPIO, 1);
 			Ti = gap8_readhwtimer();
-			for (int i=0; i<Iter; i++) rt_team_fork(gap8_ncore(), (void *) ParLinearVect, (void *) &Arg);
+			for (int i=0; i<Iter; i++) rt_team_fork(ActiveCore, (void *) ParLinearVect, (void *) &Arg);
 			Ti = gap8_readhwtimer() - Ti;
 			WriteGpio(GPIO, 0);
 			perf_cnt = rt_perf_read(perf_cnt_mode);
 			rt_perf_stop(perf);
             *num_ops = Ti;
-			if (Trace) printf("[%2d][%s] %7d %35s: %8d cycles, %1d Cores %10d %s\n", Which, Mode, Wil*Hil*Iter, "Parallel Linear Vect", Ti, gap8_ncore(), perf_cnt, perf_cnt_name);
+			if (Trace) printf("[%2d][%s] %7d %35s: %8d cycles, %1d Cores %10d %s\n", Which, Mode, Wil*Hil*Iter, "Parallel Linear Vect", Ti, ActiveCore, perf_cnt, perf_cnt_name);
             break;
 		case 18:
 			{
@@ -1360,14 +1362,14 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
 				//gap8_resethwtimer();
 				WriteGpio(GPIO, 1);
 				Ti = gap8_readhwtimer();
-				for (int i=0; i<Iter; i++) rt_team_fork(gap8_ncore(), (void *) ParXnorConv5x5, (void *) &Arg1);
+				for (int i=0; i<Iter; i++) rt_team_fork(ActiveCore, (void *) ParXnorConv5x5, (void *) &Arg1);
 				Ti = gap8_readhwtimer() - Ti;
 				WriteGpio(GPIO, 0);
 				perf_cnt = rt_perf_read(perf_cnt_mode);
 				rt_perf_stop(perf);
                 *num_ops = Ti;
 			}
-			if (Trace) printf("[%2d][%s] %7d %35s: %8d cycles, %1d Cores %10d %s\n", Which, Mode, (Wxor-4)*(Hxor-4)*Iter, "Parallel Xnor Conv 5x5", Ti, gap8_ncore(), perf_cnt, perf_cnt_name);
+			if (Trace) printf("[%2d][%s] %7d %35s: %8d cycles, %1d Cores %10d %s\n", Which, Mode, (Wxor-4)*(Hxor-4)*Iter, "Parallel Xnor Conv 5x5", Ti, ActiveCore, perf_cnt, perf_cnt_name);
 			break;
 #endif
 	}
