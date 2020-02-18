@@ -1031,7 +1031,45 @@ int processI2sRx(int sel)
 
 void capture_and_process() {
 
+// Performance Counting
+  int perf_cnt = 0; //change this for different counters (not added to RunTest func for Testing)	
+  int perf_cnt_mode;
+  rt_perf_t *perf;
+  perf = rt_alloc(RT_ALLOC_L2_CL_DATA, sizeof(rt_perf_t));
+  rt_perf_init(perf);
+  switch(perf_cnt){
+		case 0:
+			perf_cnt_mode = RT_PERF_CYCLES;
+			perf_cnt_name = "RT_PERF_CYCLES";
+			break;
+		case 1:
+			perf_cnt_mode = RT_PERF_ACTIVE_CYCLES;
+			perf_cnt_name = "RT_PERF_ACTIVE_CYCLES";
+			break;
+		case 2:
+			perf_cnt_mode = RT_PERF_INSTR;
+			perf_cnt_name = "RT_PERF_INSTR";
+			break;
+		case 3:
+			perf_cnt_mode = RT_PERF_IMISS;
+			perf_cnt_name = "RT_PERF_IMISS";
+			break;
+		case 4:
+			perf_cnt_mode = RT_PERF_LD;
+			perf_cnt_name = "RT_PERF_LD";
+			break;
+		case 5:
+			perf_cnt_mode = RT_PERF_ST;
+			perf_cnt_name = "RT_PERF_ST";
+			break;
+	}	
+	
+  rt_perf_conf(perf, (1<<perf_cnt_mode));
+  rt_perf_reset(perf);
+  gap8_resethwtimer();
+  rt_perf_start(perf);
 
+//main while loop
   while(1) {
     
 
@@ -1117,14 +1155,15 @@ void capture_and_process() {
       	printf(">>>\n");
       }
     }
+	perf_cnt = rt_perf_read(perf_cnt_mode);
+  printf("Counter: %15d %s\n",perf_cnt, perf_cnt_name);
   }
 }
 
 int main()
 {
   /* Cluster Start - Power on */
-  CLUSTER_Start(0, CORE_NUMBER,0);
-
+  CLUSTER_Start(0, CORE_NUMBER,0);  
   // Allocate a buffer in the shared L1 memory
   L1_Memory = L1_Malloc(L1_Memory_SIZE);
 
@@ -1144,9 +1183,9 @@ int main()
   init_I2S();
   printf(">>>\n");
   
-
   capture_and_process();
   
+   
   return 0;
 }
 
