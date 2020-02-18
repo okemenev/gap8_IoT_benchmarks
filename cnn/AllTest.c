@@ -8,10 +8,10 @@
 #define BYTE 
 
 
-#define ITERATIONS 10000
-#define ITERATIONS_LT 100
-#define ITERATIONS_PAR 100000
-#define ITERATIONS_LT_PAR 10000
+#define ITERATIONS 100000
+#define ITERATIONS_LT 10000
+#define ITERATIONS_PAR 1000000
+#define ITERATIONS_LT_PAR 100000
 #define ENABLE_CYCLE_TRACE 1 
 
 #define ALIM_1_VOLT 1
@@ -1447,8 +1447,8 @@ int main()
     for(int j=0; j < TOT_TEST; j++ ){
         printf("\n                      ---------------   %15s   ---------------\n",tests_titles[j]);
         for(int i=0; i < test_num[j]; i++ ){
-			if(i<=10){
-				if(i == 2 || i == 7 ){
+			if(j<=1){
+				if(i == 2){
 					Arg.Iter = ITERATIONS_LT;
 				}
 				else {
@@ -1456,7 +1456,7 @@ int main()
 				}
 			}
 			else{
-				if(i == 11 || i ==16){
+				if(i == 2){
 					Arg.Iter = ITERATIONS_LT_PAR;
 				}
 				else{
