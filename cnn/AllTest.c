@@ -1447,22 +1447,22 @@ int main()
     for(int j=0; j < TOT_TEST; j++ ){
         printf("\n                      ---------------   %15s   ---------------\n",tests_titles[j]);
         for(int i=0; i < test_num[j]; i++ ){
-		if(i<=10){
-			if(i == 2 || i == 7 ){
-				Arg.Iter = ITERATIONS_LT;
-			}
-			else {
-				Arg.Iter = ITERATIONS;
-			}
-		}
-		else{
-			if(i == 11 || i ==16){
-				Arg.Iter = ITERATIONS_LT_PAR;
+			if(i<=10){
+				if(i == 2 || i == 7 ){
+					Arg.Iter = ITERATIONS_LT;
+				}
+				else {
+					Arg.Iter = ITERATIONS;
+				}
 			}
 			else{
-				Arg.Iter = ITERATIONS_PAR;
+				if(i == 11 || i ==16){
+					Arg.Iter = ITERATIONS_LT_PAR;
+				}
+				else{
+					Arg.Iter = ITERATIONS_PAR;
+				}
 			}
-		}
 
             Arg.test_num        = cur_test++; 
             Arg.Trace           = ENABLE_CYCLE_TRACE;
@@ -1478,23 +1478,24 @@ int main()
             
             tot_time = end_time-start_time;
             op_num   = Arg.Iter_operations;
-	    if(i<=9){
-		if(i == 2 || i == 7 ){
-        	    printf ("%30s Input: %dx%d (x%d iterations) Time: %10ld uSec. Cycles: %10ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS_LT, tot_time, op_num);
-	    }
-	    else{
-            	printf ("%30s Input: %dx%d (x%d iterations) Time: %10ld uSec. Cycles: %10ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS, tot_time, op_num);
-	    }
-	    }
-	    else{
-
-		if(i == 11 || i ==16){
-        	    printf ("%30s Input: %dx%d (x%d iterations) Time: %10ld uSec. Cycles: %10ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS_LT_PAR, tot_time, op_num);
-		}
-		else{
-            		printf ("%30s Input: %dx%d (x%d iterations) Time: %10ld uSec. Cycles: %10ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS_PAR, tot_time, op_num);
-		}
-            }
+			if(i<=9){
+				if(i == 2 || i == 7 ){
+					printf ("%30s Input: %dx%d (x%d iterations) Time: %10ld uSec. Cycles: %10ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS_LT, tot_time, op_num);
+				}
+				else{
+					printf ("%30s Input: %dx%d (x%d iterations) Time: %10ld uSec. Cycles: %10ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS, tot_time, op_num);
+				}
+			}
+			else{
+				if(i == 11 || i ==16){
+					printf ("%30s Input: %dx%d (x%d iterations) Time: %10ld uSec. Cycles: %10ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS_LT_PAR, tot_time, op_num);				
+					printf ("iterations test x%d\n",ITERATIONS_LT_PAR);
+				}
+				else{
+					printf ("%30s Input: %dx%d (x%d iterations) Time: %10ld uSec. Cycles: %10ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS_PAR, tot_time, op_num);
+					printf ("iterations test x%d\n",ITERATIONS_PAR);
+				}
+			}
         }
     }
 
