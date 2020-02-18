@@ -8,8 +8,10 @@
 #define BYTE 
 
 
-#define ITERATIONS 100000
-#define ITERATIONS_LT 10000
+#define ITERATIONS 10000
+#define ITERATIONS_LT 100
+#define ITERATIONS_PAR 100000
+#define ITERATIONS_LT_PAR 10000
 #define ENABLE_CYCLE_TRACE 1 
 
 #define ALIM_1_VOLT 1
@@ -1428,8 +1430,10 @@ int main()
     printf("Fabric Controller Freq: %d MhZ\n", FREQ_FC/1000000);
     printf("Cluster  Freq         : %d MhZ\n\n\n", FREQ_CL/1000000);
     
-    printf("Number of iterations for most benchmarks: %d\n\n\n", ITERATIONS);
-    printf("Number of iterations for long benchmarks: %d\n\n\n", ITERATIONS_LT);
+    printf("Number of iterations for most single core benchmarks: %d\n", ITERATIONS);
+    printf("Number of iterations for long benchmarks: %d\n", ITERATIONS_LT);
+    printf("Number of iterations for most parallel  benchmarks: %d\n", ITERATIONS_PAR);
+    printf("Number of iterations for long parallel  benchmarks: %d\n\n\n", ITERATIONS_LT_PAR);
     
 
     if (rt_event_alloc(NULL, 8)) return -1;
@@ -1443,12 +1447,23 @@ int main()
     for(int j=0; j < TOT_TEST; j++ ){
         printf("\n                      ---------------   %15s   ---------------\n",tests_titles[j]);
         for(int i=0; i < test_num[j]; i++ ){
-		if(i == 2 || i == 7 || i == 11 || i ==16){
-			Arg.Iter = ITERATIONS_LT;
+		if(i<=10){
+			if(i == 2 || i == 7 ){
+				Arg.Iter = ITERATIONS_LT;
+			}
+			else {
+				Arg.Iter = ITERATIONS;
+			}
 		}
-		else {
-			Arg.Iter = ITERATIONS;
+		else{
+			if(i == 11 || i ==16){
+				Arg.Iter = ITERATIONS_LT_PAR;
+			}
+			else{
+				Arg.Iter = ITERATIONS_PAR;
+			}
 		}
+
             Arg.test_num        = cur_test++; 
             Arg.Trace           = ENABLE_CYCLE_TRACE;
             #ifdef BYTE
@@ -1463,12 +1478,23 @@ int main()
             
             tot_time = end_time-start_time;
             op_num   = Arg.Iter_operations;
-		if(i == 2 || i == 7 || i == 11 || i ==16){
+	    if(i<=9){
+		if(i == 2 || i == 7 ){
         	    printf ("%30s Input: %dx%d (x%d iterations) Time: %10ld uSec. Cycles: %10ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS_LT, tot_time, op_num);
 	    }
 	    else{
             	printf ("%30s Input: %dx%d (x%d iterations) Time: %10ld uSec. Cycles: %10ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS, tot_time, op_num);
 	    }
+	    }
+	    else{
+
+		if(i == 11 || i ==16){
+        	    printf ("%30s Input: %dx%d (x%d iterations) Time: %10ld uSec. Cycles: %10ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS_LT_PAR, tot_time, op_num);
+		}
+		else{
+            		printf ("%30s Input: %dx%d (x%d iterations) Time: %10ld uSec. Cycles: %10ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS_PAR, tot_time, op_num);
+		}
+            }
         }
     }
 
