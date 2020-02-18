@@ -1478,8 +1478,8 @@ int main()
             
             tot_time = end_time-start_time;
             op_num   = Arg.Iter_operations;
-			if(i<=9){
-				if(i == 2 || i == 7 ){
+			if(j<=1){
+				if(i == 2 ){
 					printf ("%30s Input: %dx%d (x%d iterations) Time: %10ld uSec. Cycles: %10ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS_LT, tot_time, op_num);
 				}
 				else{
@@ -1487,7 +1487,7 @@ int main()
 				}
 			}
 			else{
-				if(i == 11 || i ==16){
+				if(i == 2){
 					printf ("%30s Input: %dx%d (x%d iterations) Time: %10ld uSec. Cycles: %10ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS_LT_PAR, tot_time, op_num);				
 					printf ("iterations test x%d\n",ITERATIONS_LT_PAR);
 				}
