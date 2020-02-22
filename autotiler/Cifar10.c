@@ -17,7 +17,7 @@
 
 /* Variables used. */
 #define COEF_L2
-#define ITERATIONS 1000
+#define ITERATIONS 100
 //#define DEBUG
 
 #ifdef DEBUG
@@ -51,6 +51,40 @@ uint32_t Bias_Layer_Size[3]= {0};
 int16_t *Out_Layer[3];
 uint32_t Out_Layer_Size[3] = {0};
 
+#ifdef PERF
+rt_perf_t *perf;
+perf = rt_alloc(RT_ALLOC_L2_CL_DATA, sizeof(rt_perf_t));
+rt_perf_init(perf);
+int perf_cnt = 0; //change this for different counters
+int perf_cnt_mode;
+char* perf_cnt_name;
+switch(perf_cnt){
+	case 0:
+		perf_cnt_mode = RT_PERF_CYCLES;
+		perf_cnt_name = "RT_PERF_CYCLES";
+		break;
+	case 1:
+		perf_cnt_mode = RT_PERF_ACTIVE_CYCLES;
+		perf_cnt_name = "RT_PERF_ACTIVE_CYCLES";
+		break;
+	case 2:
+		perf_cnt_mode = RT_PERF_INSTR;
+		perf_cnt_name = "RT_PERF_INSTR";
+		break;
+	case 3:
+		perf_cnt_mode = RT_PERF_IMISS;
+		perf_cnt_name = "RT_PERF_IMISS";
+		break;
+	case 4:
+		perf_cnt_mode = RT_PERF_LD;
+		perf_cnt_name = "RT_PERF_LD";
+		break;
+	case 5:
+		perf_cnt_mode = RT_PERF_ST;
+		perf_cnt_name = "RT_PERF_ST";
+		break;
+}
+#endif
 int ConvAt(short *In, short int *Filter, unsigned int X, unsigned int Y, unsigned int W, unsigned int H, unsigned int Norm)
 {
     int i, j;
@@ -158,41 +192,9 @@ static void RunCifar10(void *arg)
 {
     DEBUG_PRINTF("Cluster: Start to run Cifar10\n");
 
-    rt_perf_t *perf;
-    perf = rt_alloc(RT_ALLOC_L2_CL_DATA, sizeof(rt_perf_t));
-    rt_perf_init(perf);
-    int perf_cnt = 0; //change this for different counters
-    int perf_cnt_mode;
-    char* perf_cnt_name;
-	switch(perf_cnt){
-		case 0:
-			perf_cnt_mode = RT_PERF_CYCLES;
-			perf_cnt_name = "RT_PERF_CYCLES";
-			break;
-		case 1:
-			perf_cnt_mode = RT_PERF_ACTIVE_CYCLES;
-			perf_cnt_name = "RT_PERF_ACTIVE_CYCLES";
-			break;
-		case 2:
-			perf_cnt_mode = RT_PERF_INSTR;
-			perf_cnt_name = "RT_PERF_INSTR";
-			break;
-		case 3:
-			perf_cnt_mode = RT_PERF_IMISS;
-			perf_cnt_name = "RT_PERF_IMISS";
-			break;
-		case 4:
-			perf_cnt_mode = RT_PERF_LD;
-			perf_cnt_name = "RT_PERF_LD";
-			break;
-		case 5:
-			perf_cnt_mode = RT_PERF_ST;
-			perf_cnt_name = "RT_PERF_ST";
-			break;
-	}
-    rt_perf_conf(perf, (1<<perf_cnt_mode));
-    rt_perf_reset(perf);
-    rt_perf_start(perf);
+    //rt_perf_conf(perf, (1<<perf_cnt_mode));
+    //rt_perf_reset(perf);
+    //rt_perf_start(perf);
 
     Conv5x5MaxPool2x2_SW_0(ImageIn,
                            Filter_Layer[0],
@@ -200,22 +202,22 @@ static void RunCifar10(void *arg)
                            Out_Layer[0],
                            14);
 
-    perf_cnt = pi_perf_read(perf_cnt_mode);    
-    rt_perf_stop(perf);
-    printf("Counters: %d %s\n",perf_cnt,perf_cnt_name);
-    rt_perf_reset(perf);
-    rt_perf_start(perf);
+    //perf_cnt = pi_perf_read(perf_cnt_mode);    
+    //rt_perf_stop(perf);
+    //printf("Counters: %d %s\n",perf_cnt,perf_cnt_name);
+    //rt_perf_reset(perf);
+    //rt_perf_start(perf);
 
     Conv5x5MaxPool2x2_SW_1(Out_Layer[0],
                            Filter_Layer[1],
                            Bias_Layer[1],
                            Out_Layer[1],
                            14);
-	perf_cnt = pi_perf_read(perf_cnt_mode);    
-    rt_perf_stop(perf);
-    printf("Counters: %d %s\n",perf_cnt,perf_cnt_name);
-    rt_perf_reset(perf);
-    rt_perf_start(perf);
+	//perf_cnt = pi_perf_read(perf_cnt_mode);    
+    //rt_perf_stop(perf);
+    //printf("Counters: %d %s\n",perf_cnt,perf_cnt_name);
+    //rt_perf_reset(perf);
+    //rt_perf_start(perf);
 
     LinearLayerReLU_1(Out_Layer[1],
                       Filter_Layer[2],
@@ -224,16 +226,16 @@ static void RunCifar10(void *arg)
                       16,
                       10);
 
-    perf_cnt = pi_perf_read(perf_cnt_mode);    
-    rt_perf_stop(perf);
-    printf("Counters: %d %s\n",perf_cnt,perf_cnt_name);
+    //perf_cnt = pi_perf_read(perf_cnt_mode);    
+    //rt_perf_stop(perf);
+    //printf("Counters: %d %s\n",perf_cnt,perf_cnt_name);
 	
     DEBUG_PRINTF("Cluster: End run Cifar10\n");
 }
 
 void test_cifar10(void)
 {
-    printf("Entering main controller\n");
+    //printf("Entering main controller\n");
     uint8_t CheckResults = 1;
 
     /* Output result size. */
@@ -323,8 +325,8 @@ void test_cifar10(void)
     }
     else
     {
-        printf("Allocating %d: OK -> %x\n", Out_Layer_Size[1], Out_Layer[1]);
-        printf("Allocating %d: OK -> %x\n", Out_Layer_Size[2], Out_Layer[2]);
+        //printf("Allocating %d: OK -> %x\n", Out_Layer_Size[1], Out_Layer[1]);
+        //printf("Allocating %d: OK -> %x\n", Out_Layer_Size[2], Out_Layer[2]);
     }
 
     /* Configure And open cluster. */
@@ -384,17 +386,29 @@ void test_cifar10(void)
     pmsis_l2_malloc_free(Out_Layer[2], Out_Layer_Size[2]);
 
 
-    printf("Test success\n");
+    //printf("Test success\n");
     //pmsis_exit(0);
 }
 
 int main(void)
-{
+{	
+	#ifdef PERF
+	rt_perf_conf(perf, (1<<perf_cnt_mode));
+    rt_perf_reset(perf);
+    rt_perf_start(perf);
     printf("\n\n\t *** PMSIS Cifar10 Test ***\n\n");
 	for (int j; j<ITERATIONS; j++){
 		 pmsis_kickoff((void *) test_cifar10);
+		 printf(%d,j);
 	}
-
-	return pmsis_kickoff((void *) test_cifar10);
+	perf_cnt = pi_perf_read(perf_cnt_mode);    
+    rt_perf_stop(perf);
+    printf("Counters: %d %s\n",perf_cnt,perf_cnt_name);
+	#else
+	for (int j; j<ITERATIONS; j++){
+		 pmsis_kickoff((void *) test_cifar10);
+		 printf(%d,j);
+	}
+	#endif
 }
 
