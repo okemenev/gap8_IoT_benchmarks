@@ -17,7 +17,8 @@
 
 /* Variables used. */
 #define COEF_L2
-#define ITERATIONS 100
+#define ITERATIONS 1000
+#define PERF
 //#define DEBUG
 
 #ifdef DEBUG
@@ -52,38 +53,7 @@ int16_t *Out_Layer[3];
 uint32_t Out_Layer_Size[3] = {0};
 
 #ifdef PERF
-rt_perf_t *perf;
-perf = rt_alloc(RT_ALLOC_L2_CL_DATA, sizeof(rt_perf_t));
-rt_perf_init(perf);
-int perf_cnt = 0; //change this for different counters
-int perf_cnt_mode;
-char* perf_cnt_name;
-switch(perf_cnt){
-	case 0:
-		perf_cnt_mode = RT_PERF_CYCLES;
-		perf_cnt_name = "RT_PERF_CYCLES";
-		break;
-	case 1:
-		perf_cnt_mode = RT_PERF_ACTIVE_CYCLES;
-		perf_cnt_name = "RT_PERF_ACTIVE_CYCLES";
-		break;
-	case 2:
-		perf_cnt_mode = RT_PERF_INSTR;
-		perf_cnt_name = "RT_PERF_INSTR";
-		break;
-	case 3:
-		perf_cnt_mode = RT_PERF_IMISS;
-		perf_cnt_name = "RT_PERF_IMISS";
-		break;
-	case 4:
-		perf_cnt_mode = RT_PERF_LD;
-		perf_cnt_name = "RT_PERF_LD";
-		break;
-	case 5:
-		perf_cnt_mode = RT_PERF_ST;
-		perf_cnt_name = "RT_PERF_ST";
-		break;
-}
+
 #endif
 int ConvAt(short *In, short int *Filter, unsigned int X, unsigned int Y, unsigned int W, unsigned int H, unsigned int Norm)
 {
@@ -313,7 +283,7 @@ void test_cifar10(void)
     #endif  /* COEF_L2 */
     else
     {
-        printf("Allocating %d: OK -> %x\n", Out_Layer_Size[0], Out_Layer[0]);
+        //printf("Allocating %d: OK -> %x\n", Out_Layer_Size[0], Out_Layer[0]);
     }
 
     Out_Layer[1] = (int16_t *) pmsis_l2_malloc(Out_Layer_Size[1]);
@@ -391,24 +361,63 @@ void test_cifar10(void)
 }
 
 int main(void)
-{	
+{
 	#ifdef PERF
+	long int start_time, end_time;
+	long int tot_time;
+	unsigned int Ti;
+	rt_perf_t *perf;
+	perf = rt_alloc(RT_ALLOC_L2_CL_DATA, sizeof(rt_perf_t));
+	rt_perf_init(perf);
+	int perf_cnt = 0; //change this for different counters
+	int perf_cnt_mode;
+	char* perf_cnt_name;
+	switch(perf_cnt){
+		case 0:
+			perf_cnt_mode = RT_PERF_CYCLES;
+			perf_cnt_name = "RT_PERF_CYCLES";
+			break;
+		case 1:
+			perf_cnt_mode = RT_PERF_ACTIVE_CYCLES;
+			perf_cnt_name = "RT_PERF_ACTIVE_CYCLES";
+			break;
+		case 2:
+			perf_cnt_mode = RT_PERF_INSTR;
+			perf_cnt_name = "RT_PERF_INSTR";
+			break;
+		case 3:
+			perf_cnt_mode = RT_PERF_IMISS;
+			perf_cnt_name = "RT_PERF_IMISS";
+			break;
+		case 4:
+			perf_cnt_mode = RT_PERF_LD;
+			perf_cnt_name = "RT_PERF_LD";
+			break;
+		case 5:
+			perf_cnt_mode = RT_PERF_ST;
+			perf_cnt_name = "RT_PERF_ST";
+			break;
+	}	
 	rt_perf_conf(perf, (1<<perf_cnt_mode));
-    rt_perf_reset(perf);
-    rt_perf_start(perf);
-    printf("\n\n\t *** PMSIS Cifar10 Test ***\n\n");
+	rt_perf_reset(perf);
+	rt_perf_start(perf);
+	start_time = rt_time_get_us();
+	printf("\n\n\t *** PMSIS Cifar10 Test ***\n\n");
 	for (int j; j<ITERATIONS; j++){
 		 pmsis_kickoff((void *) test_cifar10);
-		 printf(%d,j);
+		 printf("%d\n",j);
 	}
-	perf_cnt = pi_perf_read(perf_cnt_mode);    
-    rt_perf_stop(perf);
-    printf("Counters: %d %s\n",perf_cnt,perf_cnt_name);
+	perf_cnt = pi_perf_read(perf_cnt_mode);
+        end_time = rt_time_get_us();	
+	rt_perf_stop(perf);
+	tot_time = end_time - start_time;
+	printf("Time: %d uSec. | Counters: %d %s\n",tot_time,perf_cnt,perf_cnt_name);
 	#else
 	for (int j; j<ITERATIONS; j++){
 		 pmsis_kickoff((void *) test_cifar10);
-		 printf(%d,j);
+		 printf("%d\n",j);
 	}
 	#endif
+	printf("Test complete");
 }
 
