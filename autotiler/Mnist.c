@@ -28,6 +28,7 @@
 #define IMG_DIR test_img
 #define NUM_DIR 6
 #define NUM_PIC 1578
+#define ITERATIONS 1000
 
 #define __IMG_NAME(x)    #x
 #define _IMG_NAME(x,y,z) __IMG_NAME(../../../x/y/z.pgm)
@@ -108,11 +109,51 @@ void Check(char *Mess, short int *Planes, int NPlane, int W, int H)
 
 static void RunMnist(void *arg)
 {
+	rt_perf_t *perf;
+    perf = rt_alloc(RT_ALLOC_L2_CL_DATA, sizeof(rt_perf_t));
+    rt_perf_init(perf);
+	int perf_cnt = 0; //change this for different counters
+	switch(perf_cnt){
+		case 0:
+			perf_cnt_mode = RT_PERF_CYCLES;
+			perf_cnt_name = "RT_PERF_CYCLES";
+			break;
+		case 1:
+			perf_cnt_mode = RT_PERF_ACTIVE_CYCLES;
+			perf_cnt_name = "RT_PERF_ACTIVE_CYCLES";
+			break;
+		case 2:
+			perf_cnt_mode = RT_PERF_INSTR;
+			perf_cnt_name = "RT_PERF_INSTR";
+			break;
+		case 3:
+			perf_cnt_mode = RT_PERF_IMISS;
+			perf_cnt_name = "RT_PERF_IMISS";
+			break;
+		case 4:
+			perf_cnt_mode = RT_PERF_LD;
+			perf_cnt_name = "RT_PERF_LD";
+			break;
+		case 5:
+			perf_cnt_mode = RT_PERF_ST;
+			perf_cnt_name = "RT_PERF_ST";
+			break;
+	}
+    rt_perf_conf(perf, (1<<perf_cnt_mode));
+    rt_perf_reset(perf);
+    rt_perf_start(perf);
+	
     Conv5x5ReLUMaxPool2x2_0((int16_t *) image_in,
                             Filter_Layer[0],
                             Bias_Layer[0],
                             Out_Layer[0],
                             14);
+
+	perf_cnt = pi_perf_read(perf_cnt_mode);    
+    rt_perf_stop(perf);
+    printf("Counters: %d\n",perf_cnt);
+    rt_perf_reset(perf);
+    rt_perf_start(perf);
 
     Conv5x5ReLUMaxPool2x2_1(Out_Layer[0],
                             Filter_Layer[1],
@@ -120,13 +161,22 @@ static void RunMnist(void *arg)
                             Out_Layer[1],
                             14);
 
+	perf_cnt = pi_perf_read(perf_cnt_mode);    
+    rt_perf_stop(perf);
+    printf("Counters: %d\n",perf_cnt);
+    rt_perf_reset(perf);
+    rt_perf_start(perf);
+	
     LinearLayerReLU_1(Out_Layer[1],
                       Filter_Layer[2],
                       Bias_Layer[2],
                       Out_Layer[2],
                       16,
                       13);
+					  
+	
 
+	
     uint8_t *digit = (uint8_t *) arg;
     int16_t highest = Out_Layer[2][0];
     for (uint8_t i = 1; i < 10; i++)
@@ -137,6 +187,9 @@ static void RunMnist(void *arg)
             *digit = i;
         }
     }
+	perf_cnt = pi_perf_read(perf_cnt_mode);    
+    rt_perf_stop(perf);
+    printf("Counters: %d\n",perf_cnt);
 }
 
 void test_mnist(void)
@@ -278,5 +331,7 @@ void test_mnist(void)
 int main()
 {
     printf("\n\n\t *** PMSIS Mnist Test ***\n\n");
-    return pmsis_kickoff((void *) test_mnist);
+	for (int j; j<ITERATIONS; j++){
+		return pmsis_kickoff((void *) test_mnist);
+	}
 }
