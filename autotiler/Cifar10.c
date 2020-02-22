@@ -161,7 +161,9 @@ static void RunCifar10(void *arg)
     rt_perf_t *perf;
     perf = rt_alloc(RT_ALLOC_L2_CL_DATA, sizeof(rt_perf_t));
     rt_perf_init(perf);
-	int perf_cnt = 0; //change this for different counters
+    int perf_cnt = 0; //change this for different counters
+    int perf_cnt_mode;
+    char* perf_cnt_name;
 	switch(perf_cnt){
 		case 0:
 			perf_cnt_mode = RT_PERF_CYCLES;
@@ -200,7 +202,7 @@ static void RunCifar10(void *arg)
 
     perf_cnt = pi_perf_read(perf_cnt_mode);    
     rt_perf_stop(perf);
-    printf("Counters: %d\n",perf_cnt);
+    printf("Counters: %d %s\n",perf_cnt,perf_cnt_name);
     rt_perf_reset(perf);
     rt_perf_start(perf);
 
@@ -211,7 +213,7 @@ static void RunCifar10(void *arg)
                            14);
 	perf_cnt = pi_perf_read(perf_cnt_mode);    
     rt_perf_stop(perf);
-    printf("Counters: %d\n",perf_cnt);
+    printf("Counters: %d %s\n",perf_cnt,perf_cnt_name);
     rt_perf_reset(perf);
     rt_perf_start(perf);
 
@@ -224,7 +226,7 @@ static void RunCifar10(void *arg)
 
     perf_cnt = pi_perf_read(perf_cnt_mode);    
     rt_perf_stop(perf);
-    printf("Counters: %d\n",perf_cnt);
+    printf("Counters: %d %s\n",perf_cnt,perf_cnt_name);
 	
     DEBUG_PRINTF("Cluster: End run Cifar10\n");
 }
@@ -356,7 +358,7 @@ void test_cifar10(void)
 
     pi_cluster_close(&cluster_dev);
 
-    if (CheckResults)
+   /* if (CheckResults)
     {
         printf("L1: ");
         Check("SW   Layer0", Out_Layer[0], 8, 14, 14);
@@ -364,7 +366,7 @@ void test_cifar10(void)
         Check("SW   Layer1", Out_Layer[1], 12, 5, 5);
         printf("L3: ");
         Check("SW   Layer2", Out_Layer[2], 10, 1, 1);
-    }
+    }*/
 
     #if !defined(COEF_L2)
     for (uint32_t i = 0; i < 3; i++)
@@ -383,14 +385,16 @@ void test_cifar10(void)
 
 
     printf("Test success\n");
-    pmsis_exit(0);
+    //pmsis_exit(0);
 }
 
 int main(void)
 {
     printf("\n\n\t *** PMSIS Cifar10 Test ***\n\n");
 	for (int j; j<ITERATIONS; j++){
-		return pmsis_kickoff((void *) test_cifar10);
+		 pmsis_kickoff((void *) test_cifar10);
 	}
+
+	return pmsis_kickoff((void *) test_cifar10);
 }
 
