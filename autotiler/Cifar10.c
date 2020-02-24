@@ -19,6 +19,8 @@
 #define COEF_L2
 #define ITERATIONS 1000
 #define PERF
+#define FREQ_FC (150*1000000)
+#define FREQ_CL (90*1000000)
 //#define DEBUG
 
 #ifdef DEBUG
@@ -52,9 +54,6 @@ uint32_t Bias_Layer_Size[3]= {0};
 int16_t *Out_Layer[3];
 uint32_t Out_Layer_Size[3] = {0};
 
-#ifdef PERF
-
-#endif
 int ConvAt(short *In, short int *Filter, unsigned int X, unsigned int Y, unsigned int W, unsigned int H, unsigned int Norm)
 {
     int i, j;
@@ -362,6 +361,9 @@ void test_cifar10(void)
 
 int main(void)
 {
+	//Set Fabric Controller and Cluster Frequencies
+    rt_freq_set(RT_FREQ_DOMAIN_FC, FREQ_FC);
+    rt_freq_set(RT_FREQ_DOMAIN_CL, FREQ_CL);
 	#ifdef PERF
 	long int start_time, end_time;
 	long int tot_time;
