@@ -8,13 +8,13 @@
 #define BYTE 
 
 
-#define ITERATIONS 100000
-#define ITERATIONS_LT 10000
-#define ITERATIONS_PAR 1000000
+#define ITERATIONS 1000
+#define ITERATIONS_LT 100
+#define ITERATIONS_PAR 500000
 #define ITERATIONS_LT_PAR 100000
 #define ENABLE_CYCLE_TRACE 1 
 
-#define ALIM_1_VOLT 1
+#define ALIM_1_VOLT 0
 #define FREQ_FC (150*1000000)
 #define FREQ_CL (90*1000000)
 
@@ -28,6 +28,8 @@
 
 #define Wxor    100
 #define Hxor    100
+
+unsigned int PMU_set_voltage(unsigned int Voltage, unsigned int CheckFrequencies);
 
 char tests_names[][50]={
 {"2x2/2 Max Pool"},
@@ -1458,9 +1460,11 @@ int main()
 			else{
 				if(i == 2){
 					Arg.Iter = ITERATIONS_LT_PAR;
+					printf("test1");
 				}
 				else{
 					Arg.Iter = ITERATIONS_PAR;
+					printf("test2");
 				}
 			}
 
@@ -1480,20 +1484,18 @@ int main()
             op_num   = Arg.Iter_operations;
 			if(j<=1){
 				if(i == 2 ){
-					printf ("%30s Input: %dx%d (x%d iterations) Time: %10ld uSec. Cycles: %10ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS_LT, tot_time, op_num);
+					printf ("%30s Input: %dx%d (x%d iterations) Time: %ld uSec. Cycles: %ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS_LT, tot_time, op_num);
 				}
 				else{
-					printf ("%30s Input: %dx%d (x%d iterations) Time: %10ld uSec. Cycles: %10ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS, tot_time, op_num);
+					printf ("%30s Input: %dx%d (x%d iterations) Time: %ld uSec. Cycles: %ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS, tot_time, op_num);
 				}
 			}
 			else{
 				if(i == 2){
-					printf ("%30s Input: %dx%d (x%d iterations) Time: %10ld uSec. Cycles: %10ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS_LT_PAR, tot_time, op_num);				
-					printf ("iterations test x%d\n",ITERATIONS_LT_PAR);
+					printf ("%30s Input: %dx%d (x%d iterations) Time: %ld uSec. Cycles: %ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS_LT_PAR, tot_time, op_num);				
 				}
 				else{
-					printf ("%30s Input: %dx%d (x%d iterations) Time: %10ld uSec. Cycles: %10ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS_PAR, tot_time, op_num);
-					printf ("iterations test x%d\n",ITERATIONS_PAR);
+					printf ("%30s Input: %dx%d (x%d iterations) Time: %ld uSec. Cycles: %ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS_PAR, tot_time, op_num);
 				}
 			}
         }
