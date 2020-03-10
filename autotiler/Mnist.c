@@ -325,9 +325,12 @@ void test_mnist(void)
     errors = (rec_digit != (uint8_t) GoldenOutput);
     #endif /* defined(ENABLE_BRIDGE) */
 
-    printf("\nTest %s with %d error(s) !\n", (errors) ? "failed" : "success", errors);
+    //printf("\nTest %s with %d error(s) !\n", (errors) ? "failed" : "success", errors);
 
-    if(errors) pmsis_exit(-9);
+    if(errors){
+		pmsis_exit(-9);
+		printf("\nTest %s with %d error(s) !\n", (errors) ? "failed" : "success", errors);
+	}
     //else pmsis_exit(0);
 }
 
