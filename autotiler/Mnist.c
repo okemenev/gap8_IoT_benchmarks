@@ -28,7 +28,7 @@
 #define IMG_DIR test_img
 #define NUM_DIR 6
 #define NUM_PIC 1578
-#define ITERATIONS 1000
+#define ITERATIONS 200
 #define PERF
 #define FREQ_FC (150*1000000)
 #define FREQ_CL (90*1000000)
@@ -277,6 +277,7 @@ void test_mnist(void)
         else
         {
             //printf("Allocating %d: OK -> %p\n", Out_Layer_Size[i], Out_Layer[i]);
+    		//pmsis_l2_malloc_free(Out_Layer[i], Out_Layer_Size[i]);
         }
     }
 
@@ -318,6 +319,9 @@ void test_mnist(void)
     }
 
     printf("Recognized number : %d\n", rec_digit);
+    for (uint32_t i = 0; i < 3; i++){
+    		pmsis_l2_malloc_free(Out_Layer[i], Out_Layer_Size[i]);
+    }
     
     #if defined(ENABLE_BRIDGE)
     errors = (rec_digit != (uint8_t) NUM_DIR);
@@ -327,10 +331,10 @@ void test_mnist(void)
 
     //printf("\nTest %s with %d error(s) !\n", (errors) ? "failed" : "success", errors);
 
-    if(errors){
-		pmsis_exit(-9);
-		printf("\nTest %s with %d error(s) !\n", (errors) ? "failed" : "success", errors);
-	}
+    if(errors) {
+	    pmsis_exit(-9);
+    	    printf("\nTest %s with %d error(s) !\n", (errors) ? "failed" : "success", errors);
+    }
     //else pmsis_exit(0);
 }
 
