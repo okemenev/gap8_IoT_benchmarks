@@ -8,13 +8,14 @@
 #define BYTE 
 
 
-#define ITERATIONS 1000
-#define ITERATIONS_LT 100
-#define ITERATIONS_PAR 500000
-#define ITERATIONS_LT_PAR 100000
+#define ITERATIONS 11 
+#define ITERATIONS_LT 1000
+#define ITERATIONS_PAR 25000
+#define ITERATIONS_LT_PAR 1000
+#define ITERATIONS_LT_PAR_VEC 5000
 #define ENABLE_CYCLE_TRACE 1 
 
-#define ALIM_1_VOLT 0
+#define ALIM_1_VOLT 0 
 #define FREQ_FC (150*1000000)
 #define FREQ_CL (90*1000000)
 
@@ -156,7 +157,7 @@ int test_num[TOT_TEST]={5,4,5,4};
 #include "Gap8.h"
 
 static int CoreCountDynamic = 1;
-static int ActiveCore = 8;
+static int ActiveCore = 1;
 
 static inline unsigned int __attribute__((always_inline)) ChunkSize(unsigned int X)
 
@@ -1008,7 +1009,12 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
 
 {
 	unsigned int Ti;
-	int perf_cnt = 0; //change this for different counters (not added to RunTest func for Testing)	
+	int perf_cnt = 1; //change this for different counters (not added to RunTest func for Testing)	
+	int perf_cnt_1 = 0;
+	int perf_cnt_2 = 0;
+	int perf_cnt_3 = 0;
+	int perf_cnt_tot = 0;
+	int perf_cnt_pct;	
 	int perf_cnt_mode;
 	char* perf_cnt_name;	
 	ArgConvT Arg;
@@ -1045,7 +1051,8 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
 			break;
 	}			
 	
-	rt_perf_conf(perf, (1<<perf_cnt_mode));
+	rt_perf_conf(perf, ((1<<RT_PERF_CYCLES)|(1<<perf_cnt_mode)));
+	//rt_perf_conf(perf, (1<<RT_PERF_CYCLES)|(1<<RT_PERF_ACTIVE_CYCLES)|(1<<RT_PERF_ST)|(1<<RT_PERF_LD));
 	switch (Which) {
 		case 0:
 			rt_perf_reset(perf);
@@ -1056,12 +1063,15 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
 			WriteGpio(GPIO, 1);
 			Ti = gap8_readhwtimer();
 			for (int i=0; i<Iter; i++) MaxPooling(IN, Wi, Hi, OUT);
-			Ti = gap8_readhwtimer() - Ti;
-			WriteGpio(GPIO, 0);
-			perf_cnt = rt_perf_read(perf_cnt_mode);
 			rt_perf_stop(perf);
+			perf_cnt_tot = rt_perf_read(RT_PERF_CYCLES);
+			perf_cnt = rt_perf_read(perf_cnt_mode);
+			Ti = gap8_readhwtimer() - Ti;
+			//WriteGpio(GPIO, 0);
 			*num_ops = Ti;
-            if (Trace) printf("[%2d][%s] %7d %35s: %8d cycles %10d %s\n", Which, Mode, (Wi/2)*(Hi/2)*Iter, "2x2/2 Max Pool", Ti, perf_cnt, perf_cnt_name);
+			printf("%d\n",perf_cnt_tot);
+			printf("%d\n",perf_cnt);
+            if (Trace) printf("[%2d][%s] %7d %35s: %d cycles %d %s\n", Which, Mode, (Wi/2)*(Hi/2)*Iter, "2x2/2 Max Pool", perf_cnt_tot, perf_cnt, perf_cnt_name);
 			break;
 		case 1:
 			rt_perf_reset(perf);
@@ -1143,7 +1153,7 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
 			for (int i=0; i<Iter; i++) MaxPoolingVect(IN, Wi, Hi, OUT);
 			Ti = gap8_readhwtimer() - Ti;
 			WriteGpio(GPIO, 0);
-			perf_cnt = rt_perf_read(perf_cnt_mode);
+			unsigned int perf_cnt = rt_perf_read(perf_cnt_mode);
 			rt_perf_stop(perf);
             *num_ops = Ti;
 			if (Trace) printf("[%2d][%s] %7d %35s: %8d cycles %10d %s\n", Which, Mode, (Wi/2)*(Hi/2)*Iter, "2x2/2 Max Pool Vect", Ti, perf_cnt, perf_cnt_name);
@@ -1450,16 +1460,27 @@ int main()
         printf("\n                      ---------------   %15s   ---------------\n",tests_titles[j]);
         for(int i=0; i < test_num[j]; i++ ){
 			if(j<=1){
-				if(i == 2){
+				if(i == 2 || i == 4){
 					Arg.Iter = ITERATIONS_LT;
 				}
 				else {
 					Arg.Iter = ITERATIONS;
 				}
 			}
+			else if(j==2){
+				if(i == 2 ){
+					Arg.Iter = ITERATIONS_LT_PAR;
+				}
+				else if(i == 4){
+					Arg.Iter = ITERATIONS;
+				}
+				else {
+					Arg.Iter = ITERATIONS_PAR;
+				}
+			}
 			else{
 				if(i == 2){
-					Arg.Iter = ITERATIONS_LT_PAR;
+					Arg.Iter = ITERATIONS_LT_PAR_VEC;
 					printf("test1");
 				}
 				else{
@@ -1483,16 +1504,24 @@ int main()
             tot_time = end_time-start_time;
             op_num   = Arg.Iter_operations;
 			if(j<=1){
-				if(i == 2 ){
+				if(i == 2 || i==4 ){
 					printf ("%30s Input: %dx%d (x%d iterations) Time: %ld uSec. Cycles: %ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS_LT, tot_time, op_num);
 				}
 				else{
 					printf ("%30s Input: %dx%d (x%d iterations) Time: %ld uSec. Cycles: %ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS, tot_time, op_num);
 				}
 			}
-			else{
-				if(i == 2){
+			else if(j==2){
+				if(i == 2 ){
 					printf ("%30s Input: %dx%d (x%d iterations) Time: %ld uSec. Cycles: %ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS_LT_PAR, tot_time, op_num);				
+				}
+				else{
+					printf ("%30s Input: %dx%d (x%d iterations) Time: %ld uSec. Cycles: %ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS_PAR, tot_time, op_num);
+				}
+			}
+			else {
+				if(i == 2){
+					printf ("%30s Input: %dx%d (x%d iterations) Time: %ld uSec. Cycles: %ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS_LT_PAR_VEC, tot_time, op_num);				
 				}
 				else{
 					printf ("%30s Input: %dx%d (x%d iterations) Time: %ld uSec. Cycles: %ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS_PAR, tot_time, op_num);
