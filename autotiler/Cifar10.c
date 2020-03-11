@@ -19,8 +19,10 @@
 #define COEF_L2
 #define ITERATIONS 1000
 #define PERF
+/* Board Setup. */
 #define FREQ_FC (150*1000000)
 #define FREQ_CL (90*1000000)
+#define ALIM_1_VOLT 0
 //#define DEBUG
 
 #ifdef DEBUG
@@ -364,6 +366,12 @@ int main(void)
 	//Set Fabric Controller and Cluster Frequencies
     rt_freq_set(RT_FREQ_DOMAIN_FC, FREQ_FC);
     rt_freq_set(RT_FREQ_DOMAIN_CL, FREQ_CL);
+	#if !ALIM_1_VOLT
+    PMU_set_voltage(1150,0);
+    PMU_set_voltage(1200,0);
+    #else
+    PMU_set_voltage(1000,0);
+    #endif
 	#ifdef PERF
 	long int start_time, end_time;
 	long int tot_time;
@@ -372,6 +380,7 @@ int main(void)
 	perf = rt_alloc(RT_ALLOC_L2_CL_DATA, sizeof(rt_perf_t));
 	rt_perf_init(perf);
 	int perf_cnt = 0; //change this for different counters
+	int perf_cnt_tot = 0;
 	int perf_cnt_mode;
 	char* perf_cnt_name;
 	switch(perf_cnt){
@@ -400,7 +409,7 @@ int main(void)
 			perf_cnt_name = "RT_PERF_ST";
 			break;
 	}	
-	rt_perf_conf(perf, (1<<perf_cnt_mode));
+	rt_perf_conf(perf, ((1<<RT_PERF_CYCLES)|(1<<perf_cnt_mode)));
 	rt_perf_reset(perf);
 	rt_perf_start(perf);
 	start_time = rt_time_get_us();
@@ -409,9 +418,11 @@ int main(void)
 		 pmsis_kickoff((void *) test_cifar10);
 		 printf("%d\n",j);
 	}
-	perf_cnt = pi_perf_read(perf_cnt_mode);
-        end_time = rt_time_get_us();	
 	rt_perf_stop(perf);
+	perf_cnt_tot = pi_perf_read(RT_PERF_CYCLES);
+	perf_cnt = pi_perf_read(perf_cnt_mode);
+    end_time = rt_time_get_us();	
+	
 	tot_time = end_time - start_time;
 	printf("Time: %d uSec. | Counters: %d %s\n",tot_time,perf_cnt,perf_cnt_name);
 	#else
