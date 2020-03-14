@@ -14,7 +14,7 @@
 #define ITERATIONS_LT_PAR 1000
 #define ITERATIONS_LT_PAR_VEC 5000
 #define ENABLE_CYCLE_TRACE 1 
-
+/* Board Setup. */
 #define ALIM_1_VOLT 0 
 #define FREQ_FC (150*1000000)
 #define FREQ_CL (90*1000000)
@@ -1071,7 +1071,9 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
 			*num_ops = Ti;
 			//printf("%d\n",perf_cnt_tot);
 			//printf("%d\n",perf_cnt);
-            if (Trace) printf("[%2d][%s] %7d %35s: %d RT_PERF_CYCLES %d %s\n", Which, Mode, (Wi/2)*(Hi/2)*Iter, "2x2/2 Max Pool", perf_cnt_tot, perf_cnt, perf_cnt_name);
+            if (Trace) 
+				//printf("[%2d][%s] %7d %35s: %d RT_PERF_CYCLES %d %s\n", Which, Mode, (Wi/2)*(Hi/2)*Iter, "2x2/2 Max Pool", perf_cnt_tot, perf_cnt, perf_cnt_name);
+				printf("%d\n",perf_cnt);
 			break;
 		case 1:
 			rt_perf_reset(perf);
@@ -1088,7 +1090,9 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
 			WriteGpio(GPIO, 0);
 			rt_perf_stop(perf);
             *num_ops = Ti;
-			if (Trace) printf("[%2d][%s] %7d %35s: %d RT_PERF_CYCLES %10d %s\n", Which, Mode, (Wi/2)*(Hi/2)*Iter, "2x2/2 Avg Pool", perf_cnt_tot, perf_cnt, perf_cnt_name);
+			if (Trace) 
+				//printf("[%2d][%s] %7d %35s: %d RT_PERF_CYCLES %10d %s\n", Which, Mode, (Wi/2)*(Hi/2)*Iter, "2x2/2 Avg Pool", perf_cnt_tot, perf_cnt, perf_cnt_name);
+				printf("%d\n",perf_cnt);
 			break;
 		case 2:
 			rt_perf_reset(perf);
@@ -1105,7 +1109,9 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
 			WriteGpio(GPIO, 0);
 			rt_perf_stop(perf);
             *num_ops = Ti;
-			if (Trace) printf("[%2d][%s] %7d %35s: %d RT_PERF_CYCLES %10d %s\n", Which, Mode, (Wic-4)*(Hic-4)*Iter, "5x5 Convolutions", perf_cnt_tot, perf_cnt, perf_cnt_name);
+			if (Trace) 
+				//printf("[%2d][%s] %7d %35s: %d RT_PERF_CYCLES %10d %s\n", Which, Mode, (Wic-4)*(Hic-4)*Iter, "5x5 Convolutions", perf_cnt_tot, perf_cnt, perf_cnt_name);
+				printf("%d\n",perf_cnt);
 			break;
 		case 3:
 			rt_perf_reset(perf);
@@ -1122,7 +1128,9 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
 			WriteGpio(GPIO, 0);
 			rt_perf_stop(perf);
             *num_ops = Ti;
-			if (Trace) printf("[%2d][%s] %7d %35s: %d RT_PERF_CYCLES %10d %s\n", Which, Mode, Wil*Hil*Iter, "Linear", perf_cnt_tot, perf_cnt, perf_cnt_name);
+			if (Trace) 
+				//printf("[%2d][%s] %7d %35s: %d RT_PERF_CYCLES %10d %s\n", Which, Mode, Wil*Hil*Iter, "Linear", perf_cnt_tot, perf_cnt, perf_cnt_name);
+				printf("%d\n",perf_cnt);
 			break;
 		case 4:
 			{
@@ -1143,7 +1151,9 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
 				rt_perf_stop(perf);
                 *num_ops = Ti;
 			}
-			if (Trace) printf("[%2d][%s] %7d %35s: %d RT_PERF_CYCLES %10d %s\n", Which, Mode, (Wxor-4)*(Hxor-4)*Iter, "Xnor Conv 5x5", perf_cnt_tot, perf_cnt, perf_cnt_name);
+			if (Trace) 
+				//printf("[%2d][%s] %7d %35s: %d RT_PERF_CYCLES %10d %s\n", Which, Mode, (Wxor-4)*(Hxor-4)*Iter, "Xnor Conv 5x5", perf_cnt_tot, perf_cnt, perf_cnt_name);
+				printf("%d\n",perf_cnt);
 			break;
 #ifndef RISCV
 		case 5:
@@ -1161,7 +1171,9 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
 			WriteGpio(GPIO, 0);
 			rt_perf_stop(perf);
             *num_ops = Ti;
-			if (Trace) printf("[%2d][%s] %7d %35s: %d RT_PERF_CYCLES %10d %s\n", Which, Mode, (Wi/2)*(Hi/2)*Iter, "2x2/2 Max Pool Vect", perf_cnt_tot, perf_cnt, perf_cnt_name);
+			if (Trace) 
+				//printf("[%2d][%s] %7d %35s: %d RT_PERF_CYCLES %10d %s\n", Which, Mode, (Wi/2)*(Hi/2)*Iter, "2x2/2 Max Pool Vect", perf_cnt_tot, perf_cnt, perf_cnt_name);
+				printf("%d\n",perf_cnt);
 			break;
 		case 6:
 			rt_perf_reset(perf);
@@ -1178,7 +1190,9 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
 			WriteGpio(GPIO, 0);
 			rt_perf_stop(perf);
             *num_ops = Ti;
-			if (Trace) printf("[%2d][%s] %7d %35s: %d RT_PERF_CYCLES %10d %s\n", Which, Mode, (Wi/2)*(Hi/2)*Iter, "2x2/2 Avg Pool Vect", perf_cnt_tot, perf_cnt, perf_cnt_name);
+			if (Trace) 
+				//printf("[%2d][%s] %7d %35s: %d RT_PERF_CYCLES %10d %s\n", Which, Mode, (Wi/2)*(Hi/2)*Iter, "2x2/2 Avg Pool Vect", perf_cnt_tot, perf_cnt, perf_cnt_name);
+				printf("%d\n",perf_cnt);
 			break;
 		case 7:
 			rt_perf_reset(perf);
@@ -1195,7 +1209,9 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
 			WriteGpio(GPIO, 0);
 			rt_perf_stop(perf);
             *num_ops = Ti;
-            if (Trace) printf("[%2d][%s] %7d %35s: %d RT_PERF_CYCLES %10d %s\n", Which, Mode, (Wic-4)*(Hic-4)*Iter, "5x5 Convolutions Vect", perf_cnt_tot, perf_cnt, perf_cnt_name);
+            if (Trace) 
+				//printf("[%2d][%s] %7d %35s: %d RT_PERF_CYCLES %10d %s\n", Which, Mode, (Wic-4)*(Hic-4)*Iter, "5x5 Convolutions Vect", perf_cnt_tot, perf_cnt, perf_cnt_name);
+				printf("%d\n",perf_cnt);
 			break;
 		case 8:
 			rt_perf_reset(perf);
@@ -1212,7 +1228,9 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
 			WriteGpio(GPIO, 0);
 			rt_perf_stop(perf);
             *num_ops = Ti;
-			if (Trace) printf("[%2d][%s] %7d %35s: %d RT_PERF_CYCLES %10d %s\n", Which, Mode, Wil*Hil*Iter, "LinearVect", perf_cnt_tot, perf_cnt, perf_cnt_name);
+			if (Trace) 
+				//printf("[%2d][%s] %7d %35s: %d RT_PERF_CYCLES %10d %s\n", Which, Mode, Wil*Hil*Iter, "LinearVect", perf_cnt_tot, perf_cnt, perf_cnt_name);
+				printf("%d\n",perf_cnt);
 			break;
 		case 9:
 			rt_perf_reset(perf);
@@ -1230,7 +1248,9 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
 			WriteGpio(GPIO, 0);
 			rt_perf_stop(perf);
             *num_ops = Ti;
-			if (Trace) printf("[%2d][%s] %7d %35s: %d RT_PERF_CYCLES, %1d Cores %10d %s\n", Which, Mode, (Wi/2)*(Hi/2)*Iter, "2x2/2 Parallel Max Pool", perf_cnt_tot, ActiveCore, perf_cnt, perf_cnt_name);
+			if (Trace) 
+				//printf("[%2d][%s] %7d %35s: %d RT_PERF_CYCLES, %1d Cores %10d %s\n", Which, Mode, (Wi/2)*(Hi/2)*Iter, "2x2/2 Parallel Max Pool", perf_cnt_tot, ActiveCore, perf_cnt, perf_cnt_name);
+				printf("%d\n",perf_cnt);
 			break;
 		case 10:
 			rt_perf_reset(perf);
@@ -1248,7 +1268,9 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
 			WriteGpio(GPIO, 0);
 			rt_perf_stop(perf);
             *num_ops = Ti;
-			if (Trace) printf("[%2d][%s] %7d %35s: %d RT_PERF_CYCLES, %1d Cores %10d %s\n", Which, Mode, (Wi/2)*(Hi/2)*Iter, "2x2/2 Parallel Avg Pool", perf_cnt_tot, ActiveCore, perf_cnt, perf_cnt_name);
+			if (Trace) 
+				//printf("[%2d][%s] %7d %35s: %d RT_PERF_CYCLES, %1d Cores %10d %s\n", Which, Mode, (Wi/2)*(Hi/2)*Iter, "2x2/2 Parallel Avg Pool", perf_cnt_tot, ActiveCore, perf_cnt, perf_cnt_name);
+				printf("%d\n",perf_cnt);
 			break;
 		case 11:
 			rt_perf_reset(perf);
@@ -1266,7 +1288,9 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
 			WriteGpio(GPIO, 0);
 			rt_perf_stop(perf);
             *num_ops = Ti;
-            if (Trace) printf("[%2d][%s] %7d %35s: %d RT_PERF_CYCLES, %1d Cores %10d %s\n", Which, Mode, (Wic-4)*(Hic-4)*Iter, "Parallel 5x5 Convolution", perf_cnt_tot, ActiveCore, perf_cnt, perf_cnt_name);
+            if (Trace) 
+				//printf("[%2d][%s] %7d %35s: %d RT_PERF_CYCLES, %1d Cores %10d %s\n", Which, Mode, (Wic-4)*(Hic-4)*Iter, "Parallel 5x5 Convolution", perf_cnt_tot, ActiveCore, perf_cnt, perf_cnt_name);
+				printf("%d\n",perf_cnt);
 			break;
 		case 12:
 			rt_perf_reset(perf);
@@ -1284,7 +1308,9 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
 			WriteGpio(GPIO, 0);
 			rt_perf_stop(perf);
             *num_ops = Ti;
-			if (Trace) printf("[%2d][%s] %7d %35s: %d RT_PERF_CYCLES, %1d Cores %10d %s\n", Which, Mode, Wil*Hil*Iter, "Parallel Linear", perf_cnt_tot, ActiveCore, perf_cnt, perf_cnt_name);
+			if (Trace) 
+				//printf("[%2d][%s] %7d %35s: %d RT_PERF_CYCLES, %1d Cores %10d %s\n", Which, Mode, Wil*Hil*Iter, "Parallel Linear", perf_cnt_tot, ActiveCore, perf_cnt, perf_cnt_name);
+				printf("%d\n",perf_cnt);
 			break;
 		case 13:
 			{
@@ -1306,7 +1332,9 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
 				rt_perf_stop(perf);
                 *num_ops = Ti;
 			}
-			if (Trace) printf("[%2d][%s] %7d %35s: %d RT_PERF_CYCLES, %1d Cores %10d %s\n", Which, Mode, (Wxor-4)*(Hxor-4)*Iter, "Parallel Xnor Conv 5x5", perf_cnt_tot, ActiveCore, perf_cnt, perf_cnt_name);
+			if (Trace) 
+				//printf("[%2d][%s] %7d %35s: %d RT_PERF_CYCLES, %1d Cores %10d %s\n", Which, Mode, (Wxor-4)*(Hxor-4)*Iter, "Parallel Xnor Conv 5x5", perf_cnt_tot, ActiveCore, perf_cnt, perf_cnt_name);
+				printf("%d\n",perf_cnt);
 			break;
 		case 14:
 			rt_perf_reset(perf);
@@ -1324,7 +1352,9 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
 			WriteGpio(GPIO, 0);
 			rt_perf_stop(perf);
             *num_ops = Ti;
-			if (Trace) printf("[%2d][%s] %7d %35s: %d RT_PERF_CYCLES, %1d Cores %10d %s\n", Which, Mode, (Wi/2)*(Hi/2)*Iter, "2x2/2 Parallel Max Pool Vect", perf_cnt_tot, ActiveCore, perf_cnt, perf_cnt_name);
+			if (Trace) 
+				//printf("[%2d][%s] %7d %35s: %d RT_PERF_CYCLES, %1d Cores %10d %s\n", Which, Mode, (Wi/2)*(Hi/2)*Iter, "2x2/2 Parallel Max Pool Vect", perf_cnt_tot, ActiveCore, perf_cnt, perf_cnt_name);
+				printf("%d\n",perf_cnt);
 			break;
 		case 15:
 			rt_perf_reset(perf);
@@ -1342,7 +1372,9 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
 			WriteGpio(GPIO, 0);
 			rt_perf_stop(perf);
             *num_ops = Ti;
-			if (Trace) printf("[%2d][%s] %7d %35s: %d RT_PERF_CYCLES, %1d Cores %10d %s\n", Which, Mode, (Wi/2)*(Hi/2)*Iter, "2x2/2 Parallel Avg Pool Vect", perf_cnt_tot, ActiveCore, perf_cnt, perf_cnt_name);
+			if (Trace) 
+				//printf("[%2d][%s] %7d %35s: %d RT_PERF_CYCLES, %1d Cores %10d %s\n", Which, Mode, (Wi/2)*(Hi/2)*Iter, "2x2/2 Parallel Avg Pool Vect", perf_cnt_tot, ActiveCore, perf_cnt, perf_cnt_name);
+				printf("%d\n",perf_cnt);
 			break;
 		case 16:
 			rt_perf_reset(perf);
@@ -1360,7 +1392,9 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
 			WriteGpio(GPIO, 0);
 			rt_perf_stop(perf);
             *num_ops = Ti;
-			if (Trace) printf("[%2d][%s] %7d %35s: %d RT_PERF_CYCLES, %1d Cores %10d %s\n", Which, Mode, (Wic-4)*(Hic-4)*Iter, "Parallel Convolution Vect", perf_cnt_tot, ActiveCore, perf_cnt, perf_cnt_name);
+			if (Trace) 
+				//printf("[%2d][%s] %7d %35s: %d RT_PERF_CYCLES, %1d Cores %10d %s\n", Which, Mode, (Wic-4)*(Hic-4)*Iter, "Parallel Convolution Vect", perf_cnt_tot, ActiveCore, perf_cnt, perf_cnt_name);
+				printf("%d\n",perf_cnt);
 			break;
 		case 17:
 			rt_perf_reset(perf);
@@ -1379,8 +1413,10 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
 			WriteGpio(GPIO, 0);
 			rt_perf_stop(perf);
             *num_ops = Ti;
-			if (Trace) printf("[%2d][%s] %7d %35s: %d RT_PERF_CYCLES, %1d Cores %10d %s\n", Which, Mode, Wil*Hil*Iter, "Parallel Linear Vect", perf_cnt_tot, ActiveCore, perf_cnt, perf_cnt_name);
-            break;
+			if (Trace) 
+				//printf("[%2d][%s] %7d %35s: %d RT_PERF_CYCLES, %1d Cores %10d %s\n", Which, Mode, Wil*Hil*Iter, "Parallel Linear Vect", perf_cnt_tot, ActiveCore, perf_cnt, perf_cnt_name);
+				printf("%d\n",perf_cnt);
+			break;
 		case 18:
 			{
 				rt_perf_reset(perf);
@@ -1401,7 +1437,9 @@ void RunTest(int Which, int Iter, int Trace, char *Mode,int * num_ops)
 				rt_perf_stop(perf);
                 *num_ops = Ti;
 			}
-			if (Trace) printf("[%2d][%s] %7d %35s: %d RT_PERF_CYCLES, %1d Cores %10d %s\n", Which, Mode, (Wxor-4)*(Hxor-4)*Iter, "Parallel Xnor Conv 5x5", perf_cnt_tot, ActiveCore, perf_cnt, perf_cnt_name);
+			if (Trace) 
+				//printf("[%2d][%s] %7d %35s: %d RT_PERF_CYCLES, %1d Cores %10d %s\n", Which, Mode, (Wxor-4)*(Hxor-4)*Iter, "Parallel Xnor Conv 5x5", perf_cnt_tot, ActiveCore, perf_cnt, perf_cnt_name);
+				printf("%d\n",perf_cnt);
 			break;
 #endif
 	}
@@ -1475,7 +1513,7 @@ int main()
     rt_freq_set(RT_FREQ_DOMAIN_CL, FREQ_CL);
     
     for(int j=0; j < TOT_TEST; j++ ){
-        printf("\n                      ---------------   %15s   ---------------\n",tests_titles[j]);
+        //printf("\n                      ---------------   %15s   ---------------\n",tests_titles[j]);
         for(int i=0; i < test_num[j]; i++ ){
 			if(j<=1){
 				if(i == 2 || i == 4){
@@ -1499,11 +1537,11 @@ int main()
 			else{
 				if(i == 2){
 					Arg.Iter = ITERATIONS_LT_PAR_VEC;
-					printf("test1");
+					//printf("test1");
 				}
 				else{
 					Arg.Iter = ITERATIONS_PAR;
-					printf("test2");
+					//printf("test2");
 				}
 			}
 
@@ -1523,26 +1561,26 @@ int main()
             op_num   = Arg.Iter_operations;
 			if(j<=1){
 				if(i == 2 || i==4 ){
-					printf ("%30s Input: %dx%d (x%d iterations) Time: %ld uSec. Cycles: %ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS_LT, tot_time, op_num);
+					//printf ("%30s Input: %dx%d (x%d iterations) Time: %ld uSec. Cycles: %ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS_LT, tot_time, op_num);
 				}
 				else{
-					printf ("%30s Input: %dx%d (x%d iterations) Time: %ld uSec. Cycles: %ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS, tot_time, op_num);
+					//printf ("%30s Input: %dx%d (x%d iterations) Time: %ld uSec. Cycles: %ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS, tot_time, op_num);
 				}
 			}
 			else if(j==2){
 				if(i == 2 ){
-					printf ("%30s Input: %dx%d (x%d iterations) Time: %ld uSec. Cycles: %ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS_LT_PAR, tot_time, op_num);				
+					//printf ("%30s Input: %dx%d (x%d iterations) Time: %ld uSec. Cycles: %ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS_LT_PAR, tot_time, op_num);				
 				}
 				else{
-					printf ("%30s Input: %dx%d (x%d iterations) Time: %ld uSec. Cycles: %ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS_PAR, tot_time, op_num);
+					//printf ("%30s Input: %dx%d (x%d iterations) Time: %ld uSec. Cycles: %ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS_PAR, tot_time, op_num);
 				}
 			}
 			else {
 				if(i == 2){
-					printf ("%30s Input: %dx%d (x%d iterations) Time: %ld uSec. Cycles: %ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS_LT_PAR_VEC, tot_time, op_num);				
+					//printf ("%30s Input: %dx%d (x%d iterations) Time: %ld uSec. Cycles: %ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS_LT_PAR_VEC, tot_time, op_num);				
 				}
 				else{
-					printf ("%30s Input: %dx%d (x%d iterations) Time: %ld uSec. Cycles: %ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS_PAR, tot_time, op_num);
+					//printf ("%30s Input: %dx%d (x%d iterations) Time: %ld uSec. Cycles: %ld\n",tests_names[i], test_input_w[i],test_input_h[i], ITERATIONS_PAR, tot_time, op_num);
 				}
 			}
         }
