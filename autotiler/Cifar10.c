@@ -161,6 +161,13 @@ void CopyFileFromFlashToL3(struct pi_device *fs, char *file_name, uint32_t *hype
 
 static void RunCifar10(void *arg)
 {
+	int start_time;
+	int checkpoint1;
+	int checkpoint2;
+	int checkpoint3;
+	int stage1_time;
+	int stage2_time;
+	int stage3_time;
     DEBUG_PRINTF("Cluster: Start to run Cifar10\n");
 
     //rt_perf_conf(perf, (1<<perf_cnt_mode));
