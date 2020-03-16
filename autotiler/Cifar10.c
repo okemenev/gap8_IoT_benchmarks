@@ -166,12 +166,16 @@ static void RunCifar10(void *arg)
     //rt_perf_conf(perf, (1<<perf_cnt_mode));
     //rt_perf_reset(perf);
     //rt_perf_start(perf);
+	start_time = rt_time_get_us();
 
     Conv5x5MaxPool2x2_SW_0(ImageIn,
                            Filter_Layer[0],
                            Bias_Layer[0],
                            Out_Layer[0],
                            14);
+	checkpoint1 = rt_time_get_us();
+	stage1_time = checkpoint1 - start_time;
+	printf("%d", stage1_time);
 
     //perf_cnt = pi_perf_read(perf_cnt_mode);    
     //rt_perf_stop(perf);
@@ -184,6 +188,10 @@ static void RunCifar10(void *arg)
                            Bias_Layer[1],
                            Out_Layer[1],
                            14);
+	
+	checkpoint2 = rt_time_get_us();
+	stage2_time = checkpoint2 - checkpoint1;
+	printf("%d", stage2_time);
 	//perf_cnt = pi_perf_read(perf_cnt_mode);    
     //rt_perf_stop(perf);
     //printf("Counters: %d %s\n",perf_cnt,perf_cnt_name);
@@ -201,6 +209,9 @@ static void RunCifar10(void *arg)
     //rt_perf_stop(perf);
     //printf("Counters: %d %s\n",perf_cnt,perf_cnt_name);
 	
+	checkpoint3 = rt_time_get_us();
+	stage1_time = checkpoint3 - checkpoint2;
+	printf("%d", stage3_time);
     DEBUG_PRINTF("Cluster: End run Cifar10\n");
 }
 
